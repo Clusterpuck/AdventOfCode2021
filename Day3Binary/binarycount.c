@@ -74,10 +74,11 @@ void filterOx( char **lifeArray, char* filterArray,
                 int row, int colIndex, int length )
 {
     int onesCount = 0;
-    int i;
+    int i, j;
     int newRows;
     int currentMatches = 0;
     char match;
+/*    char *oxygen = (char*)( malloc( sizeof( char ) * length )  );*/
     for( i = 0; i < row; i++ )
     {
         if( filterArray[i] == 'Y' )
@@ -108,8 +109,16 @@ void filterOx( char **lifeArray, char* filterArray,
     }
     else
     {
-        printf("First 4 digits are %d, %d, %d, %d",
-            lifeArray[0][0], lifeArray[0][1], lifeArray[0][2], lifeArray[0][3] );
+        for( i = 0; i < row; i++ )
+        {
+            if( filterArray[i] == 'Y' )
+            {
+                for( j=0; j < length; j++ )
+                {
+                    printf( "%c, ", lifeArray[i][j] );
+                }
+            }
+        }
     }
 }
 
