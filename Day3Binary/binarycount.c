@@ -76,7 +76,7 @@ void filterOx( char **lifeArray, char* filterArray,
     int onesCount = 0;
     int i;
     int newRows;
-    int currentMatches;
+    int currentMatches = 0;
     char match;
     for( i = 0; i < row; i++ )
     {
@@ -101,7 +101,7 @@ void filterOx( char **lifeArray, char* filterArray,
     }
     fillMatches( lifeArray, filterArray, colIndex, row, match );
 
-    if( newRows > 2 )
+    if( newRows != 1 )
     {
         ++colIndex;
         filterOx( lifeArray, filterArray, row, colIndex, length );
