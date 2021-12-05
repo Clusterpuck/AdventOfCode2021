@@ -16,13 +16,126 @@
 #define FALSE 0
 #define TRUE !FALSE
 
+void printTwoDArray( char** array, int row, int col )
+{
+    int i, j;
+    for( i = 0; i < row; i++ )
+    {
+        for( j=0; j<col; j++ )
+        {
+            printf(" %c,", array[i][j] );
+        }
+        printf("\n");
+    }
+}
+
+void fillLifeArray( char **lifeArray, int row, int col, FILE* binfilePtr )
+{
+    int i = 0;
+    int j;
+    int done = FALSE;
+    char* input = (char*)malloc( sizeof( char ) * col );
+
+    while( !done )
+    {
+        input = fgets( input, 20, binfilePtr );
+        if( input == NULL )
+        {
+            done = TRUE;
+        }
+        else
+        {
+            for( j = 0; j < col; j++ )
+            {
+                lifeArray[i][j] = input[j];
+            }
+            ++i;
+        }
+    }
+    printTwoDArray( lifeArray, row, col );
+
+}
+
+void fillMatches( char **lifeArray, char *filterArray, int colIndex, int row,
+                    char match )
+{
+    int i;
+    for( i = 0; i < row; i++ )
+    {
+        if( lifeArray[i][colIndex] != match )
+        {
+            filterArray[i] = 'N';
+        }
+    }
+}
+
+
+void filterOx( char **lifeArray, char* filterArray,
+                int row, int colIndex, int length )
+{
+    int onesCount = 0;
+    int i;
+    int newRows;
+    int currentMatches;
+    char match;
+    for( i = 0; i < row; i++ )
+    {
+        if( filterArray[i] == 'Y' )
+        {
+            ++currentMatches;
+        }
+        if( lifeArray[i][colIndex] == '1' && filterArray[i] == 'Y' )
+        {
+            ++onesCount;
+        }
+    }
+    if( onesCount >= ( currentMatches/2 ) )
+    {
+        newRows = onesCount;
+        match = '1';
+    }
+    else
+    {
+        newRows = currentMatches - onesCount;
+        match = '0';
+    }
+    fillMatches( lifeArray, filterArray, colIndex, row, match );
+
+    if( newRows > 2 )
+    {
+        ++colIndex;
+        filterOx( lifeArray, filterArray, row, colIndex, length );
+    }
+    else
+    {
+        printf("First 4 digits are %d, %d, %d, %d",
+            lifeArray[0][0], lifeArray[0][1], lifeArray[0][2], lifeArray[0][3] );
+    }
+}
+
+void myNotOperator( int *binArray, int length )
+{
+    int i;
+    for( i=0; i < length; i++ )
+    {
+        if( binArray[i] == 0 )
+        {
+            binArray[i] = 1;
+        }
+        else
+        {
+            binArray[i] = 0;
+        }
+    }
+}
+
 int binToInt( int *binArray, int length )
 {
     int num  = 0;
     int i;
     for( i = length; i >= 0; i-- )
     {
-        num += ( binArray[i] ) * pow( 2, length-i );
+        num += ( binArray[i] ) * pow( 2, length-i-1 );
     }
     return num;
 }
@@ -30,13 +143,17 @@ int binToInt( int *binArray, int length )
 int readPower( FILE* binfilePtr )
 {
     int done = FALSE;
-    unsigned int power = 0;
     int countAll = 0;
-    int oneCounts[20];
+    int *oneCounts;
     int i;
     int length = 0;
+    int gamma = 0;
+    int epsilon = 0;
+    char **lifeArray;
+    char *filterArray;
 
     char *input = (char*)malloc( sizeof( char ) * 20 );
+    oneCounts = (int*)calloc( 20, sizeof(int) );
 
     while( !done )
     {
@@ -58,7 +175,27 @@ int readPower( FILE* binfilePtr )
             }
         }
     }
+
+    lifeArray = (char**)malloc( sizeof(char*)*countAll );
+    for( i=0; i< countAll; ++i)
+    {
+        lifeArray[i] = (char*)malloc( sizeof(char)*length );
+    }
+    filterArray = (char*)malloc( sizeof(char)*countAll );
+    for( i=0; i< countAll; i++ )
+    {
+        filterArray[i] = 'Y';
+        /*Starts with all index in yes position,
+ *          to be changed to all but one no*/
+    }
+
+    rewind( binfilePtr );
+
+    fillLifeArray( lifeArray, countAll, length, binfilePtr );
+    filterOx( lifeArray, filterArray, countAll, 0, length );
+
     free( input );
+
     for( i=0; i<length; i++ )
     {
         if( ( countAll/2 ) > oneCounts[i] )
@@ -69,11 +206,12 @@ int readPower( FILE* binfilePtr )
         {
             oneCounts[i] = 1;
         }
-        printf( " %d, ", oneCounts[i] );
     }
-    power = binToInt( oneCounts, length );
+    gamma = binToInt( oneCounts, length );
+    myNotOperator( oneCounts, length );
+    epsilon = binToInt( oneCounts, length );
 
-    return power;
+    return gamma*epsilon;
 }
 
 
@@ -82,7 +220,6 @@ int main(int argc, char * argv[])
     char *binfile = "input.txt";
     FILE *binfilePtr = NULL;
     int power = 0;
-    int notPower = 0;
 
     binfilePtr = fopen( binfile, "r" );
 
@@ -95,11 +232,8 @@ int main(int argc, char * argv[])
         power = readPower( binfilePtr );
     }
 
-    fclose( binfilePtr );
 
     printf( "The power is %d\n", power );
-    notPower = (~power);
-    printf( "The not power is %d\n", notPower );
 
     return 0;
 }
