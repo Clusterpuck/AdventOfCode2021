@@ -69,6 +69,74 @@ void fillMatches( char **lifeArray, char *filterArray, int colIndex, int row,
     }
 }
 
+int binToInt( char *binArray, int length )
+{
+    int num  = 0;
+    int i;
+    for( i = length; i >= 0; i-- )
+    {
+        num += ( binArray[i] - 48 ) * pow( 2, length-i-1 );
+    }
+    return num;
+}
+
+void filterCOTwo( char **lifeArray, char* filterArray,
+                int row, int colIndex, int length )
+{
+    int onesCount = 0;
+    int i, j;
+    int newRows;
+    int currentMatches = 0;
+    char match;
+    char *coTwo = (char*)( malloc( sizeof( char ) * length )  );
+    int coInt = 0;
+    for( i = 0; i < row; i++ )
+    {
+        if( filterArray[i] == 'Y' )
+        {
+            ++currentMatches;
+        }
+        if( lifeArray[i][colIndex] == '1' && filterArray[i] == 'Y' )
+        {
+            ++onesCount;
+        }
+    }
+    if( onesCount <= ( currentMatches/2 ) )
+    {
+        newRows = onesCount;
+        match = '1';
+    }
+    else
+    {
+        newRows = currentMatches - onesCount;
+        match = '0';
+    }
+    fillMatches( lifeArray, filterArray, colIndex, row, match );
+
+    if( newRows != 1 )
+    {
+        ++colIndex;
+        filterCOTwo( lifeArray, filterArray, row, colIndex, length );
+    }
+    else
+    {
+        for( i = 0; i < row; i++ )
+        {
+            if( filterArray[i] == 'Y' )
+            {
+                for( j=0; j < length; j++ )
+                {
+                    coTwo[j] = lifeArray[i][j];
+                    printf( "%c, ", lifeArray[i][j] );
+                }
+            }
+        }
+        coInt = binToInt( coTwo, length );
+        printf( "Decimal of oxygen is %d\n", coInt );
+    }
+}
+
+
 
 void filterOx( char **lifeArray, char* filterArray,
                 int row, int colIndex, int length )
@@ -78,7 +146,8 @@ void filterOx( char **lifeArray, char* filterArray,
     int newRows;
     int currentMatches = 0;
     char match;
-/*    char *oxygen = (char*)( malloc( sizeof( char ) * length )  );*/
+    char *oxygen = (char*)( malloc( sizeof( char ) * length )  );
+    int oxInt = 0;
     for( i = 0; i < row; i++ )
     {
         if( filterArray[i] == 'Y' )
@@ -115,10 +184,13 @@ void filterOx( char **lifeArray, char* filterArray,
             {
                 for( j=0; j < length; j++ )
                 {
+                    oxygen[j] = lifeArray[i][j];
                     printf( "%c, ", lifeArray[i][j] );
                 }
             }
         }
+        oxInt = binToInt( oxygen, length );
+        printf( "Decimal of oxygen is %d\n", oxInt );
     }
 }
 
@@ -138,16 +210,6 @@ void myNotOperator( int *binArray, int length )
     }
 }
 
-int binToInt( int *binArray, int length )
-{
-    int num  = 0;
-    int i;
-    for( i = length; i >= 0; i-- )
-    {
-        num += ( binArray[i] ) * pow( 2, length-i-1 );
-    }
-    return num;
-}
 
 int readPower( FILE* binfilePtr )
 {
@@ -202,6 +264,7 @@ int readPower( FILE* binfilePtr )
 
     fillLifeArray( lifeArray, countAll, length, binfilePtr );
     filterOx( lifeArray, filterArray, countAll, 0, length );
+    filterCOTwo( lifeArray, filterArray, countAll, 0, length );
 
     free( input );
 
