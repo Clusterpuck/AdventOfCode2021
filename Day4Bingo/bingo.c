@@ -14,7 +14,6 @@
 
 void fileSize( FILE* bingoFilePtr, int* drawsPtr, int* cardNumPtr )
 {
-/*    int nRead = 0;*/
     int done = FALSE;
     int input1;
     char *readLine = (char*)malloc( sizeof(char) * 1064 );
@@ -26,7 +25,7 @@ void fileSize( FILE* bingoFilePtr, int* drawsPtr, int* cardNumPtr )
     input1 = atoi( strtok( readLine, "," ) );
     printf( "Input reads %d\n", input1 );
     while( !done )
-    {        
+    {
         temp = strtok( NULL, "," );
         if( temp != NULL )
         {
@@ -40,7 +39,7 @@ void fileSize( FILE* bingoFilePtr, int* drawsPtr, int* cardNumPtr )
         }
     }
     printf( "The final count is %d\n", *drawsPtr );
-    
+
     done = FALSE;
     while( !done )
     {
@@ -50,21 +49,38 @@ void fileSize( FILE* bingoFilePtr, int* drawsPtr, int* cardNumPtr )
             (*cardNumPtr)++;
             printf("Card number is %d\n", *cardNumPtr );
         }
-        else if( endCheck == NULL )
+        if( endCheck == NULL )
         {
             done = TRUE;
         }
     }
 }
 
+void extractData( FILE* bingoFilePtr, int draws, int cardNum )
+{
+    int i, j;
+    int *drawValues = (int*)malloc( sizeof( int ) * draws );
+    int ***bingoCards = (int***)malloc( sizeof(int**) * cardNum );
+
+    for( i=0; i < cardNum; i++ )
+    {
+        bingoCards[i] = (int**)malloc( sizeof(int*) * BINGO_SIZE );
+        for( j=0; j < BINGO_SIZE; j++ )
+        {
+            bingoCard[i][j] = (int*)malloc( sizeof(int) * BINGO_SIZE );
+        }
+    }
+
+    rewind( bingoFilePtr );
+
+    fillDrawValues( bingoFilePtr, 
+
 
 void readFile( FILE* bingoFilePtr )
 {
-/*    int *drawnNums;
-    int **bingoCard;*/
     int draws = 0;
     int cardNum = 0;
 
     fileSize( bingoFilePtr, &draws, &cardNum );
+    extractData( bingoFilePtr, draws, cardNum );
 }
-     
