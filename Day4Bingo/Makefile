@@ -8,7 +8,7 @@
 
 CC = gcc
 CFLAGS = -Wall -pedantic -ansi -Werror
-OBJ = main.o bingo.o
+OBJ = main.o bingo.o utility.o
 EXEC = bingo
 
 ifdef DEBUG
@@ -27,9 +27,11 @@ $(EXEC) : $(OBJ)
 main.o: main.c bingo.h
 	$(CC) -c main.c $(CFLAGS)
 
-bingo.o : bingo.c bingo.h
+bingo.o : bingo.c bingo.h utility.h
 	$(CC) -c bingo.c $(CFLAGS)
 
+utility.o : utility.c utility.h
+	$(CC) -c utility.c $(CFLAGS)
 clean:
 	rm -f $(EXEC) $(OBJ)
 
