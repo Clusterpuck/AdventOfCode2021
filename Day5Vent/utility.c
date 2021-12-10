@@ -13,13 +13,29 @@ void printIntArray( int *array, int length )
 {
     int i;
     printf( "{" );
-    for( i=0; i < length; i++ )
+    for( i=0; i < length-1; i++ )
     {
         printf( "%d, ", array[i] );
     }
-    printf( "}\n" );
+    i++;
+    printf( "%d }\n", array[i] );
 }
 
+
+void printTwoDIntArray( int **array, int rows, int cols )
+{
+    int i,j;
+    printf( "{" );
+    for( i=0; i < rows; i++ )
+    {
+        for( j=0; j < cols; j++ )
+        {
+            printf("%d, ", array[i][j] );
+        }
+        printf("\n");
+    }
+    printf("}\n");
+}
 
 void printThreeDIntArray( int ***array, int rows, int cols, int blocks )
 {

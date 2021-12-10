@@ -3,6 +3,7 @@
 
 
 void printIntArray( int* array, int length );
+void printTwoDIntArray( int **array, int rows, int cols );
 void printThreeDIntArray( int ***array, int rows, int cols, int blocks );
 
 #endif

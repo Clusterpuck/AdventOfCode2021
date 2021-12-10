@@ -8,8 +8,8 @@
 
 CC = gcc
 CFLAGS = -Wall -pedantic -ansi -Werror
-OBJ = main.o bingo.o utility.o
-EXEC = bingo
+OBJ = main.o vent.o utility.o
+EXEC = vent
 
 ifdef DEBUG
 CFLAGS += -D DEBUG
@@ -24,11 +24,11 @@ endif
 $(EXEC) : $(OBJ)
 	$(CC) $(OBJ) -o $(EXEC)
 
-main.o: main.c bingo.h
+main.o: main.c vent.h
 	$(CC) -c main.c $(CFLAGS)
 
-bingo.o : bingo.c bingo.h utility.h
-	$(CC) -c bingo.c $(CFLAGS)
+vent.o : vent.c vent.h utility.h
+	$(CC) -c vent.c $(CFLAGS)
 
 utility.o : utility.c utility.h
 	$(CC) -c utility.c $(CFLAGS)
