@@ -8,12 +8,12 @@
  * Edited By:       Date Edited:                                              *
  * ***************************************************************************/
 #include <stdio.h>
-#include "fish.h"
+#include "crabsub.h"
 
 int main(int argc, char * argv[])
 {
     FILE *filePtr;
-    unsigned long answer = 0;
+    int answer = 0;
 
     if( argc == 2 )
     {
@@ -26,7 +26,7 @@ int main(int argc, char * argv[])
         {
             answer = readFile( filePtr );
             /*Insert the function to solve the problem here*/
-            printf( "Answer is %lu\n", answer );
+            printf( "Answer is %d\n", answer );
         }
     }
     else

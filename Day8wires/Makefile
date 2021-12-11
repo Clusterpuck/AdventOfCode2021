@@ -8,8 +8,8 @@
 
 CC = gcc
 CFLAGS = -Wall -pedantic -ansi -Werror
-OBJ = main.o fish.o utility.o
-EXEC = fish
+OBJ = main.o crabsub.o utility.o
+EXEC = crabsub
 
 ifdef DEBUG
 CFLAGS += -D DEBUG
@@ -22,12 +22,12 @@ VALG : clean $(EXEC)
 endif
 
 $(EXEC) : $(OBJ)
-	$(CC) $(OBJ) -o $(EXEC)
+	$(CC) $(OBJ) -o $(EXEC) 
 
-main.o: main.c fish.h
+main.o: main.c crabsub.h
 	$(CC) -c main.c $(CFLAGS)
 
-fish.o : fish.c fish.h utility.h
+fish.o : crabsub.c crabsub.h utility.h
 	$(CC) -c fish.c $(CFLAGS)
 
 utility.o : utility.c utility.h
