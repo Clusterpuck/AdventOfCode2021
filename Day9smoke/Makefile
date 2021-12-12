@@ -8,8 +8,8 @@
 
 CC = gcc
 CFLAGS = -Wall -pedantic -ansi -Werror
-OBJ = main.o wires.o utility.o
-EXEC = wires
+OBJ = main.o smoke.o utility.o
+EXEC = smoke
 
 ifdef DEBUG
 CFLAGS += -D DEBUG
@@ -24,11 +24,11 @@ endif
 $(EXEC) : $(OBJ)
 	$(CC) $(OBJ) -o $(EXEC)
 
-main.o: main.c wires.h
+main.o: main.c smoke.h
 	$(CC) -c main.c $(CFLAGS)
 
-fish.o : wires.c wires.h utility.h
-	$(CC) -c wires.c $(CFLAGS)
+smoke.o : smoke.c smoke.h utility.h
+	$(CC) -c smoke.c $(CFLAGS)
 
 utility.o : utility.c utility.h
 	$(CC) -c utility.c $(CFLAGS)

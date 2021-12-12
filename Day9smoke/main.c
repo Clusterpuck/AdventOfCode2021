@@ -8,7 +8,7 @@
  * Edited By:       Date Edited:                                              *
  * ***************************************************************************/
 #include <stdio.h>
-#include "wires.h"
+#include "smoke.h"
 
 int main(int argc, char * argv[])
 {

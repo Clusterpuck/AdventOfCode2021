@@ -1,5 +1,5 @@
 /******************************************************************************
- * Filename:  dive.c                                                          *
+ * Filename:                                                                  *
  * Author: Nicholas Wright 12880155                                           *
  * Purpose:                                                                   *
  * Assertions- PRE:                                                           *
@@ -7,32 +7,22 @@
  * Date Written:                                                              *
  * Edited By:       Date Edited:                                              *
  * ***************************************************************************/
-#include <stdio.h>
-#include "wires.h"
 
-int main(int argc, char * argv[])
-{
-    FILE *filePtr;
-    int answer = 0;
+#ifndef WIRES_H
+#define WIRES_H
 
-    if( argc == 2 )
-    {
-        filePtr = fopen( argv[1], "r" );
-        if( filePtr == NULL )
-        {
-            perror( "Error opening file\n" );
-        }
-        else
-        {
-            answer = readFile( filePtr );
-            /*Insert the function to solve the problem here*/
-            printf( "Answer is %d\n", answer );
-        }
-    }
-    else
-    {
-        printf( "You must enter a filename to open\n" );
-    }
+#define BIG_DATA 1000
+#define SMALL_DATA 64
+#define NUMBERS 10
+#define IN_LENGTH 10
+#define OUT_LENGTH 4
 
-    return 0;
-}
+void fiveLengthDecode( char** decoderString, char* inSeg, int length );
+void sixLengthDecode( char** decoderString, char* inSeg, int length );
+void deepDecode( char** inArray, char **decoderString );
+int translate( char **decodeString, char *output );
+int decode( char *input, char *output );
+int getDigits( FILE* wireFilePtr );
+int readFile( FILE* wireFilePtr );
+
+#endif
