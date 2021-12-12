@@ -30,28 +30,34 @@ int sumRisk( int** arrayMap, int rows, int cols )
 {
     int sum = 0;
     int i, j = 0;
-    int left = 0, right = 0, up = 0, down = 0;
+    int left, right, up, down;
     for( i=0; i < rows; i++ )
     {
-        if( i == (rows - 1 ) )
-        {
-            down = 0;
-        }
-        else if( i != 0 )
-        {
-            up = arrayMap[i+1][j];
-            down = arrayMap[i-1][j];
-        }
         for( j=0; j < cols; j++ )
         {
+            if( i == 0 )
+            {
+                up = 10;
+                down = arrayMap[i+1][j];
+            }
+            else if( i == ( rows - 1 ) )
+            {
+                up = arrayMap[i-1][j];
+                down = 10;
+            }
+            else
+            {
+                up = arrayMap[i-1][j];
+                down = arrayMap[i+1][j];
+            }
             if( j == 0 )
             {
-                left = 0;
+                left = 10;
                 right = arrayMap[i][j+1];
             }
             else if( j == (cols-1) )
             {
-                right = 0;
+                right = 10;
                 left = arrayMap[i][j-1];
             }
             else
@@ -62,8 +68,8 @@ int sumRisk( int** arrayMap, int rows, int cols )
             if( ( arrayMap[i][j] < left ) && ( arrayMap[i][j] < right ) &&
                 ( arrayMap[i][j] < up ) && ( arrayMap[i][j] < down ) )
             {
-                sum += arrayMap[i][j]+1;
-                printf("Low point at %d,%d, or %d\n", i,j, arrayMap[i][j] );
+                sum += (arrayMap[i][j]+1);
+                printf("Low point at %d,%d, value %d\n", i,j, arrayMap[i][j] );
             }
         }
     }
