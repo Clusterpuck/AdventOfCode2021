@@ -9,66 +9,48 @@
  * ***************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
+#include "smoke.h"
 #include "utility.h"
 
 void fillMap( FILE* smokeFilePtr, int **arrayMap, int rows, int cols )
 {
     int i, j;
-    for( i=0; i < rows; i++ )
+    /*Starts at 1 to account for border*/
+    for( i=0; i < (rows+2); i++ )
     {
-        for( j=0; j < cols; j++ )
+        for( j=0; j < (cols +2); j++ )
         {
-            arrayMap[i][j] = fgetc( smokeFilePtr ) - 48;
+            if( ( j == 0 ) || ( j == ( cols+1 ) ) ||
+                ( i == 0 ) || ( i == ( rows+1 ) ) )
+            {/*Inserts a border value greater than all other array values*/
+                arrayMap[i][j] = BORDER_VAL;
+            }   
+            else
+            {
+                arrayMap[i][j] = fgetc( smokeFilePtr ) - 48;
+                printf
+            }
         }
         fgetc( smokeFilePtr );
         /*consumes end of line character*/
     }
-    printTwoDIntArray( arrayMap, rows, cols );
+    printTwoDIntArray( arrayMap, rows+2, cols+2 );
 }
+
 
 int sumRisk( int** arrayMap, int rows, int cols )
 {
     int sum = 0;
-    int i, j = 0;
-    int left, right, up, down;
-    for( i=0; i < rows; i++ )
+    int i, j;
+        /*starts at 1 to account for inserted border*/
+    for( i=1; i < rows; i++ )
     {
-        for( j=0; j < cols; j++ )
+        for( j=1; j < cols; j++ )
         {
-            if( i == 0 )
+            if( ( arrayMap[i][j] < LEFT ) && ( arrayMap[i][j] < RIGHT ) &&
+                ( arrayMap[i][j] < UP ) && ( arrayMap[i][j] < DOWN ) )
             {
-                up = 10;
-                down = arrayMap[i+1][j];
-            }
-            else if( i == ( rows - 1 ) )
-            {
-                up = arrayMap[i-1][j];
-                down = 10;
-            }
-            else
-            {
-                up = arrayMap[i-1][j];
-                down = arrayMap[i+1][j];
-            }
-            if( j == 0 )
-            {
-                left = 10;
-                right = arrayMap[i][j+1];
-            }
-            else if( j == (cols-1) )
-            {
-                right = 10;
-                left = arrayMap[i][j-1];
-            }
-            else
-            {
-                left = arrayMap[i][j-1];
-                right = arrayMap[i][j+1];
-            }
-            if( ( arrayMap[i][j] < left ) && ( arrayMap[i][j] < right ) &&
-                ( arrayMap[i][j] < up ) && ( arrayMap[i][j] < down ) )
-            {
-                sum += (arrayMap[i][j]+1);
+                sum += ( arrayMap[i][j]+1 );
                 printf("Low point at %d,%d, value %d\n", i,j, arrayMap[i][j] );
             }
         }
@@ -100,10 +82,10 @@ int readFile( FILE* smokeFilePtr )
     rewind( smokeFilePtr );
     cols = cols/rows;
 
-    arrayMap = (int**)malloc( sizeof( int* ) * rows );
-    for( i=0; i < rows; i++ )
-    {
-        arrayMap[i] = (int*)malloc( sizeof( int ) *cols );
+    arrayMap = (int**)malloc( sizeof( int* ) * ( rows + 2 ) );
+    for( i=0; i < ( rows+2); i++ )
+    {  /*Increased by 2 to add border value*/
+        arrayMap[i] = (int*)malloc( sizeof( int ) *( cols + 2 ) );
     }
 
     fillMap( smokeFilePtr, arrayMap, rows, cols );
