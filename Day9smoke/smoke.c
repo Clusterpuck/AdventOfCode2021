@@ -28,10 +28,12 @@ void fillMap( FILE* smokeFilePtr, int **arrayMap, int rows, int cols )
             else
             {
                 arrayMap[i][j] = fgetc( smokeFilePtr ) - 48;
-                printf
             }
         }
-        fgetc( smokeFilePtr );
+        if( ( i != 0 ) && ( i != ( rows+1 ) ) )
+        { 
+            fgetc( smokeFilePtr );
+        }
         /*consumes end of line character*/
     }
     printTwoDIntArray( arrayMap, rows+2, cols+2 );
@@ -43,9 +45,9 @@ int sumRisk( int** arrayMap, int rows, int cols )
     int sum = 0;
     int i, j;
         /*starts at 1 to account for inserted border*/
-    for( i=1; i < rows; i++ )
+    for( i=1; i < ( rows+1) ; i++ )
     {
-        for( j=1; j < cols; j++ )
+        for( j=1; j < ( cols+1 ); j++ )
         {
             if( ( arrayMap[i][j] < LEFT ) && ( arrayMap[i][j] < RIGHT ) &&
                 ( arrayMap[i][j] < UP ) && ( arrayMap[i][j] < DOWN ) )
