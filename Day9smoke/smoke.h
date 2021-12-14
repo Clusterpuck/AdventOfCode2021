@@ -13,10 +13,8 @@
 
 void fillMap( FILE* smokeFilePtr, int **arrayMap, int rows, int cols );
 int sumRisk( int **arrayMap, int rows, int cols );
-void checkAround( int **arrayMap, int rows, int cols, int i, int j,
-                 int *count, int checkVal );
-void sizeBasins( int **basinData, int count,
-                 int **arrayMap, int rows, int cols );
+void checkAround( int **arrayMap, int i, int j, int *count, int checkVal );
+void sizeBasins( int **basinData, int count, int **arrayMap );
 int readFile( FILE* smokeFilePtr );
 
 #endif

@@ -39,14 +39,15 @@ void fillMap( FILE* smokeFilePtr, int **arrayMap, int rows, int cols )
     printTwoDIntArray( arrayMap, rows+2, cols+2 );
 }
 
-void sizeBasins( int** basinData, int count,
-                 int** arrayMap, int rows, int cols )
+void sizeBasins( int** basinData, int count, int** arrayMap )
 {
     int i;
     for( i = 0; i < count; i++ )
     {
-        checkAround( arrayMap, rows, cols,
-                     basinData[i][0], basinData[i][1], &( basinData[i][2] ),
+        printf( "Starting search for %d\n", 
+                arrayMap[basinData[i][0]][basinData[i][1]] ); 
+        checkAround( arrayMap, basinData[i][0], basinData[i][1], 
+                     &( basinData[i][2] ), 
                      arrayMap[basinData[i][0]][basinData[i][1]] );
     }
 
@@ -86,43 +87,46 @@ int sumRisk( int** arrayMap, int rows, int cols )
         }
     }
 
-    sizeBasins( basinData, count, arrayMap, rows, cols );
+    sizeBasins( basinData, count, arrayMap );
     return sum;
 }
 
-void checkAround( int** arrayMap, int rows, int cols,
-                  int i, int j, int* count, int checkVal )
+void checkAround( int** arrayMap, int i, int j, int* count, int checkVal )
 {
     int newCheck;
-    checkVal = POS;
-    POS = MARK;
+    printf( "checking around %d\n", checkVal );
+
     if( ( i > 0 ) && ( UP >= checkVal ) && ( UP < 9 ) )
     {
         (*count)++;
         --i;
         newCheck = POS;
-        checkAround( arrayMap, rows, cols, i, j, count, newCheck );
+        POS = -1;
+        checkAround( arrayMap, i, j, count, newCheck );
     }
     if( ( DOWN >= checkVal ) &&  ( DOWN < 9 ) )
-    {
-        ++(*count);
+    { /*Will the recursive remember the i's and j's from the first call*/
+        (*count)++;
         ++i;
         newCheck = POS;
-        checkAround( arrayMap, rows, cols, i, j, count, newCheck );
+        POS = -1;
+        checkAround( arrayMap, i, j, count, newCheck );
     }
     if( ( j > 0 ) && ( LEFT >= checkVal ) && ( LEFT < 9 ) )
     {
         (*count)++;
         --j;
         newCheck = POS;
-        checkAround( arrayMap, rows, cols, i, j, count, newCheck );
+        POS = -1;
+        checkAround( arrayMap, i, j, count, newCheck );
     }
     if( ( RIGHT >= checkVal ) && ( RIGHT < 9 ) )
     {
         (*count)++;
         ++j;
         newCheck = POS;
-        checkAround( arrayMap, rows, cols, i, j, count, newCheck );
+        POS = -1;
+        checkAround( arrayMap, i, j, count, newCheck );
     }
 }
 
