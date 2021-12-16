@@ -42,8 +42,8 @@ void openCloseChoice( char bracket, int* openCloseCount )
             {
                 ++( openCloseCount[0] );
                 ++( openCloseCount[4] );
-            }
                 break;
+            }
             case ')':
             {
                 --( openCloseCount[0] );
@@ -100,13 +100,11 @@ int scoreLine( int* openCloseCount )
     for( i=0; i < 4; i++ )
     {
         printf( "%d ", openCloseCount[i] );
-        if( openCloseCount[i] < 0 )
-        {
-            sum += ( openCloseCount[i] * syntaxScore[i] );
-        }
+        sum += ( openCloseCount[i] * syntaxScore[i] );
         openCloseCount[i] = 0;
     }
     printf("\n");
+
 
     return sum;
 }
@@ -114,7 +112,8 @@ int scoreLine( int* openCloseCount )
 
 int scoreCorrupt( char** fileData, int lines )
 {
-    int i, j, length;
+    int i, length, j;
+    int opens = 0;
     int* openCloseCount = (int*)calloc( 6, sizeof(int) );
     int sum = 0;
     /*( count at 0 [ count at 1 { count at 2 < count at 3 >
@@ -122,14 +121,36 @@ int scoreCorrupt( char** fileData, int lines )
 
     for( i=0; i < lines; i++ )
     {
+        j=0;
+        opens = 0;
         length = strcspn( fileData[i], "\n" );
-        for( j=0; j < ( length ); j++ )
+        while( ( opens >= 0 ) && ( j < length ) )
         {
-            openCloseChoice( fileData[i][j], openCloseCount );
+            if( fileData[i][j] == '(' || fileData[i][j] == '[' ||
+                fileData[i][j] == '{' || fileData[i][j] == '<' )
+            {
+                /*Need to test if any unique bracket closes more than it opens*/
+                ++opens;
+            }
+            else
+            {
+                --opens;
+            }
+            ++j;
+            /*
+            openCloseChoice( fileData[i][j], openCloseCount );*/
         }
+        printf( "Line %d of length %d has %d opens\n", 
+                i, length, opens );
+                    
+/*
         if( openCloseCount[4] != openCloseCount[5] )
         {
             sum += scoreLine( openCloseCount );
+        }*/
+        for( j=0; j < 6; j++ )
+        {
+            openCloseCount[j] = 0;
         }
     }
 
