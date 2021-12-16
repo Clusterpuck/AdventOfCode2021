@@ -12,6 +12,7 @@
 #include <string.h>
 #include "syntax.h"
 #include "utility.h"
+#include "linkedlist.h"
 
 int fileSize( FILE* syntaxFilePtr )
 {
@@ -34,126 +35,103 @@ int fileSize( FILE* syntaxFilePtr )
 
 }
 
-void openCloseChoice( char bracket, int* openCloseCount )
+int closeChoice( char openBracket, char closeBracket )
 {
-    switch( bracket )
+    int corrupt = FALSE;
+    switch( openBracket  )
     {
-            case '(':
-            {
-                ++( openCloseCount[0] );
-                ++( openCloseCount[4] );
-                break;
-            }
-            case ')':
-            {
-                --( openCloseCount[0] );
-                ++( openCloseCount[5] );
-                break;
-            }
-            case '[':
-            {
-                ++( openCloseCount[1] );
-                ++( openCloseCount[4] );
-                break;
-            }
-            case ']':
-            {
-                --( openCloseCount[1] );
-                ++( openCloseCount[5] );
-                break;
-            }
-            case '{':       
-            {
-                ++( openCloseCount[2] );
-                ++( openCloseCount[4] );
-                break;
-            }
-            case '}':
-            {
-                --( openCloseCount[2] );
-                ++( openCloseCount[5] );
-                break;
-            }
-            case '<':
-            {
-                ++( openCloseCount[3] );
-                ++( openCloseCount[4] );
-                break;
-            }
-            case '>':
-            {
-                --( openCloseCount[3] );
-                ++( openCloseCount[5] );
-                break;
-            }
-            default:
-                printf( "Non standard char found %c\n", bracket);
+        case '(':
+        {
+            if( closeBracket != ')' )
+                corrupt = TRUE;
+            break;
+        }
+        case '[':
+        {
+            if( closeBracket != ']' )
+                corrupt = TRUE;
+            break;
+        }
+        case '{':
+        {
+            if( closeBracket != '}' )
+                corrupt = TRUE;
+            break;
+        }
+        case '<':
+        {
+            if( closeBracket != '>' )
+                corrupt = TRUE;
+            break;
+        }
+        default:
+            printf( "Non standard char found %c\n", closeBracket);
     }
+    return corrupt;
 }
 
-int scoreLine( int* openCloseCount )
+int scoreLine( char badBracket )
 {
-    int i;
-    int sum = 0;
-    int syntaxScore[] = { 3, 57, 1197, 25137 };
+    int score = 0;
 
-    for( i=0; i < 4; i++ )
+    switch ( badBracket )
     {
-        printf( "%d ", openCloseCount[i] );
-        sum += ( openCloseCount[i] * syntaxScore[i] );
-        openCloseCount[i] = 0;
+        case ')':
+            score = 3;
+            break;
+        case ']':
+            score = 57;
+            break;
+        case '}':
+            score = 1197;
+            break;
+        case '>':
+            score = 25137;
+            break;
+        default:
+            printf( "Non-standard error found\n" );
     }
-    printf("\n");
 
-
-    return sum;
+    return score;
 }
 
 
 int scoreCorrupt( char** fileData, int lines )
 {
-    int i, length, j;
-    int opens = 0;
-    int* openCloseCount = (int*)calloc( 6, sizeof(int) );
+    int i, j, length;
+    int corrupt;
     int sum = 0;
+    char* testChar;
+    LinkedList *braceList;
     /*( count at 0 [ count at 1 { count at 2 < count at 3 >
  *      4 is opens, 5 is closes*/
-
     for( i=0; i < lines; i++ )
     {
         j=0;
-        opens = 0;
+        corrupt = FALSE;
+        braceList = createLinkedList();
         length = strcspn( fileData[i], "\n" );
-        while( ( opens >= 0 ) && ( j < length ) )
+        while( ( j < length ) && !corrupt )
         {
-            if( fileData[i][j] == '(' || fileData[i][j] == '[' ||
+            if( fileData[i][j] == '[' || fileData[i][j] == '(' ||
                 fileData[i][j] == '{' || fileData[i][j] == '<' )
             {
-                /*Need to test if any unique bracket closes more than it opens*/
-                ++opens;
+                insertLast( braceList, &fileData[i][j] );
             }
             else
             {
-                --opens;
+                testChar = (char*)( removeLast( braceList ) );
+                corrupt = closeChoice( (*testChar), fileData[i][j] );
+                /*Only open braces stored in list, close braces remove them*/
+                if( corrupt )
+                {
+                    sum += scoreLine( fileData[i][j] );
+                    printf( " sum is %d from %c on line %d\n", sum, fileData[i][j], i );
+                }
             }
-            ++j;
-            /*
-            openCloseChoice( fileData[i][j], openCloseCount );*/
-        }
-        printf( "Line %d of length %d has %d opens\n", 
-                i, length, opens );
-                    
-/*
-        if( openCloseCount[4] != openCloseCount[5] )
-        {
-            sum += scoreLine( openCloseCount );
-        }*/
-        for( j=0; j < 6; j++ )
-        {
-            openCloseCount[j] = 0;
+            j++;
         }
     }
-
     return sum;
 }
 

@@ -8,7 +8,7 @@
 
 CC = gcc
 CFLAGS = -Wall -pedantic -ansi -Werror
-OBJ = main.o syntax.o utility.o
+OBJ = main.o syntax.o utility.o linkedlist.o
 EXEC = syntax
 
 ifdef DEBUG
@@ -32,6 +32,9 @@ syntax.o : syntax.c syntax.h utility.h
 
 utility.o : utility.c utility.h
 	$(CC) -c utility.c $(CFLAGS)
+
+linkedlist.o : linkedlist.c linkedlist.h
+	$(CC) -c linkedlist.c $(CFLAGS)
 
 clean:
 	rm -f $(EXEC) $(OBJ)
