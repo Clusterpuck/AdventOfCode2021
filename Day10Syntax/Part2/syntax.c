@@ -19,7 +19,7 @@ int fileSize( FILE* syntaxFilePtr )
     int count = 0;
     char *tempString = (char*)malloc( sizeof(char) * BIG_DATA );
     char *endTest = (char*)malloc( sizeof(char) * SMALL_DATA );
-
+    
     endTest = fgets( tempString, BIG_DATA, syntaxFilePtr );
 
     while( endTest != NULL )
@@ -95,56 +95,16 @@ int scoreLine( char badBracket )
     return score;
 }
 
-void insertScore( LinkedList *braceList, LinkedList *insertScores )
-{
-    int size = braceList->size;
-    int* score = (int*)malloc( sizeof(int) );
-    char* openChar;
-    int i;
-
-    for( i = 0; i < size; i++ )
-    {
-        openChar = (char*)removeLast( braceList );
-        switch( *openChar )
-        {
-            case '(':
-            {
-                (*score) *= 5;
-                (*score) += 1;
-                break;
-            }
-            case ']':
-            {
-                (*score) *= 5;
-                (*score) += 2;
-                break;
-            }
-            case '}':
-            {
-                (*score) *= 5;
-                (*score) += 3;
-                break;
-            }
-            case '>':
-            {
-                (*score) *= 5;
-                (*score) += 4;
-                break;
-            }
-        }
-    }
-    insertFirst( insertScores, score );
-}
-
 
 int scoreCorrupt( char** fileData, int lines )
 {
-    int i, j, length, corrupt;
+    int i, j, length;
+    int corrupt;
     int sum = 0;
     char* testChar;
     LinkedList *braceList;
-    LinkedList *insertScores = createLinkedList();
-
+    /*( count at 0 [ count at 1 { count at 2 < count at 3 >
+ *      4 is opens, 5 is closes*/
     for( i=0; i < lines; i++ )
     {
         j=0;
@@ -170,15 +130,6 @@ int scoreCorrupt( char** fileData, int lines )
                 }
             }
             j++;
-            if( ( j==length ) && !corrupt )
-            {/*braceList should be list of unclosed brackets
-               so just need to identify correct closing bracket order*/
-                if( braceList->size != 0 )
-                {
-                    insertScore( braceList, insertScores );
-                }
-            }
-
         }
     }
     return sum;
@@ -188,9 +139,9 @@ int readFile( FILE* syntaxFilePtr )
 {
     int lines, corrupt;
     int i;
-    char **fileData;
-
-    lines = fileSize( syntaxFilePtr );
+    char **fileData;  
+  
+    lines = fileSize( syntaxFilePtr ); 
     fileData = (char**)malloc( sizeof( char* ) * lines );
     for( i=0; i < lines; i++ )
     {
@@ -198,7 +149,8 @@ int readFile( FILE* syntaxFilePtr )
         fgets( fileData[i], BIG_DATA, syntaxFilePtr );
     }
 
-    corrupt = scoreCorrupt( fileData, lines );
+    corrupt = scoreCorrupt( fileData, lines ); 
+    
 
     return corrupt;
-}
+}   
