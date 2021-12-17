@@ -70,6 +70,23 @@ int closeChoice( char openBracket, char closeBracket )
     return corrupt;
 }
 
+void sortList( LinkedList *scoreList )
+{
+    void *tempData = scoreList->head->data;
+    LiLiNode *nodeOne = scoreList->head;
+    LiLiNode *nodetwo = scoreList->head->next;
+    int tempScoreOne, tempScoretwo;
+    void* minPtr = NULL;
+    int size = scoreList->size;
+    
+    while( tempNodeOne != NULL )
+    {
+        while( tempNodeTwo != NULL )
+        minIndex = i;
+        for( j= i+1; j < size; j++ )
+        {
+            
+
 int scoreLine( char badBracket )
 {
     int score = 0;
