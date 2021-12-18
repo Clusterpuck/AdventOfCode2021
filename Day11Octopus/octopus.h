@@ -4,9 +4,10 @@
 #define FALSE 0
 #define TRUE !FALSE
 
-#define ROWS 5
-#define COLS 5
-#define DAYS 100
+#define ROWS 10
+#define COLS 10
+#define DAYS 200
+#define OCTO_NUM 100
 
 
 void postFlash( int **octoArray, int i, int j );
