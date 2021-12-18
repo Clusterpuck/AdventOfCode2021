@@ -14,6 +14,8 @@
 #include "utility.h"
 #include "linkedlist.h"
 
+
+/*Determines number of lines in file*/
 int fileSize( FILE* syntaxFilePtr )
 {
     int count = 0;
@@ -35,6 +37,9 @@ int fileSize( FILE* syntaxFilePtr )
 
 }
 
+
+/*Determines if open close bracket matches expected close bracket
+ * Returns boolean */
 int closeChoice( char openBracket, char closeBracket )
 {
     int corrupt = FALSE;
@@ -70,23 +75,39 @@ int closeChoice( char openBracket, char closeBracket )
     return corrupt;
 }
 
+
+
+/*Sorts the linked list from smallest to largest data value*/
 void sortList( LinkedList *scoreList )
 {
-    void *tempData = scoreList->head->data;
+    void *tempPtr;
     LiLiNode *nodeOne = scoreList->head;
-    LiLiNode *nodetwo = scoreList->head->next;
-    int tempScoreOne, tempScoretwo;
-    void* minPtr = NULL;
-    int size = scoreList->size;
-    
-    while( tempNodeOne != NULL )
-    {
-        while( tempNodeTwo != NULL )
-        minIndex = i;
-        for( j= i+1; j < size; j++ )
-        {
-            
+    LiLiNode *nodeTwo = scoreList->head->next;
+    int *dataOne, *dataTwo;
 
+    while( nodeTwo != NULL )
+    {
+
+        while( nodeTwo != NULL )
+        {
+            dataOne = (int*)( nodeOne->data );
+            dataTwo = (int*)( nodeTwo->data );
+            if( ( *dataTwo ) < (*dataOne) )
+            {
+                tempPtr = nodeOne->data;
+                nodeOne->data = nodeTwo->data;
+                nodeTwo->data = tempPtr;
+            }
+            nodeTwo = nodeTwo->next;
+        }
+        nodeOne = nodeOne->next;
+        nodeTwo = nodeOne->next;
+    }
+}
+
+
+
+/*Determines score based on the bad bracket found*/
 int scoreLine( char badBracket )
 {
     int score = 0;
@@ -112,39 +133,52 @@ int scoreLine( char badBracket )
     return score;
 }
 
+
+
+void printChar( void *data )
+{
+    char* temp = (char*)data;
+    printf( "%c ", *temp );
+}
+
+
+void printScore( void *data )
+{
+    long* score = (long*)(data);
+    printf( "%ld ", *score );
+}
+
+/*Totals the score for a line that was incomplete, saves into a linked list*/
 void insertScore( LinkedList *braceList, LinkedList *insertScores )
 {
     int size = braceList->size;
-    int* score = (int*)malloc( sizeof(int) );
+    long* score = (long*)calloc( 1, sizeof(long) );
     char* openChar;
     int i;
 
     for( i = 0; i < size; i++ )
     {
+        (*score) *= 5;
         openChar = (char*)removeLast( braceList );
         switch( *openChar )
         {
             case '(':
             {
-                (*score) *= 5;
                 (*score) += 1;
                 break;
             }
-            case ']':
+            case '[':
             {
-                (*score) *= 5;
                 (*score) += 2;
                 break;
             }
-            case '}':
+            case '{':
             {
-                (*score) *= 5;
                 (*score) += 3;
                 break;
             }
-            case '>':
+            case '<':
             {
-                (*score) *= 5;
                 (*score) += 4;
                 break;
             }
@@ -154,6 +188,34 @@ void insertScore( LinkedList *braceList, LinkedList *insertScores )
 }
 
 
+/*Moves to the mid point of a sorted linked list and prints the data value*/
+void finalInsertScore( LinkedList *scores )
+{
+    int size = scores->size;
+    int midSize = ( size/2 );
+    int i;
+    long *score;
+    void* data;
+    LiLiNode *scoreNode = scores->head;
+    for( i=0; i < midSize; i++ )
+    {
+        scoreNode = scoreNode->next;
+    }
+    data = scoreNode->data;
+    score = (long*)data;
+
+    printf( "Mid score is %ld\n", *score );
+    /* 184357871 is wrong  */
+}
+
+
+
+/*Creates a linked list for each line, filled only with open bracket
+ * If the bracket is closed correctly it is removed from the list.
+ * If it is not closed by the correct bracket, the list is no longer added
+ * to and the corrupt score is calculated.
+ * If the list still contains open brackets by the end of the read line
+ * And is not corrupt, list is scored for incomplete.*/
 int scoreCorrupt( char** fileData, int lines )
 {
     int i, j, length, corrupt;
@@ -183,7 +245,6 @@ int scoreCorrupt( char** fileData, int lines )
                 if( corrupt )
                 {
                     sum += scoreLine( fileData[i][j] );
-                    printf( " sum is %d from %c on line %d\n", sum, fileData[i][j], i );
                 }
             }
             j++;
@@ -197,9 +258,14 @@ int scoreCorrupt( char** fileData, int lines )
             }
 
         }
+       /* freeLinkedList( braceList, &free );*/
     }
+    sortList( insertScores );
+    finalInsertScore( insertScores );
+
     return sum;
 }
+
 
 int readFile( FILE* syntaxFilePtr )
 {

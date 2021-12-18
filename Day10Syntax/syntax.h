@@ -11,6 +11,7 @@
 
 int fileSize( FILE* syntaxFilePtr );
 int closeChoice( char openBracket, char closeBracket );
+void sortList( LinkedList *scoreList );
 int scoreLine( char badBracket );
 void insertScore( LinkedList *braceList, LinkedList *inserScores );
 int scoreCorrupt( char **fileData, int lines );
