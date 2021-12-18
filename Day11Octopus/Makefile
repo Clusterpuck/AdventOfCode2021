@@ -8,8 +8,8 @@
 
 CC = gcc
 CFLAGS = -Wall -pedantic -ansi -Werror
-OBJ = main.o syntax.o utility.o linkedlist.o
-EXEC = syntax
+OBJ = main.o octopus.o utility.o
+EXEC = octopus
 
 ifdef DEBUG
 CFLAGS += -D DEBUG
@@ -24,17 +24,14 @@ endif
 $(EXEC) : $(OBJ)
 	$(CC) $(OBJ) -o $(EXEC)
 
-main.o: main.c syntax.h
+main.o: main.c octopus.h
 	$(CC) -c main.c $(CFLAGS)
 
-syntax.o : syntax.c syntax.h utility.h
-	$(CC) -c syntax.c $(CFLAGS)
+octopus.o : octopus.c octopus.h utility.h
+	$(CC) -c octopus.c $(CFLAGS)
 
 utility.o : utility.c utility.h
 	$(CC) -c utility.c $(CFLAGS)
-
-linkedlist.o : linkedlist.c linkedlist.h
-	$(CC) -c linkedlist.c $(CFLAGS)
 
 clean:
 	rm -f $(EXEC) $(OBJ)

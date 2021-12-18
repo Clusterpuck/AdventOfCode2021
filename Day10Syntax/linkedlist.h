@@ -7,7 +7,7 @@ typedef struct LinkedListNode
     struct LinkedListNode *next;
 } LiLiNode;
 
-typedef struct 
+typedef struct
 {
     LiLiNode * head;
     int size;

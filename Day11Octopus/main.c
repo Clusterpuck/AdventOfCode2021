@@ -8,7 +8,7 @@
  * Edited By:       Date Edited:                                              *
  * ***************************************************************************/
 #include <stdio.h>
-#include "syntax.h"
+#include "octopus.h"
 
 int main(int argc, char * argv[])
 {

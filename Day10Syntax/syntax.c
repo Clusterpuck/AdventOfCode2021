@@ -83,15 +83,15 @@ void sortList( LinkedList *scoreList )
     void *tempPtr;
     LiLiNode *nodeOne = scoreList->head;
     LiLiNode *nodeTwo = scoreList->head->next;
-    int *dataOne, *dataTwo;
+    long *dataOne, *dataTwo;
 
     while( nodeTwo != NULL )
     {
 
         while( nodeTwo != NULL )
         {
-            dataOne = (int*)( nodeOne->data );
-            dataTwo = (int*)( nodeTwo->data );
+            dataOne = (long*)( nodeOne->data );
+            dataTwo = (long*)( nodeTwo->data );
             if( ( *dataTwo ) < (*dataOne) )
             {
                 tempPtr = nodeOne->data;
@@ -204,7 +204,7 @@ void finalInsertScore( LinkedList *scores )
     data = scoreNode->data;
     score = (long*)data;
 
-    printf( "Mid score is %ld\n", *score );
+    printf( "Mid score is %ld\n", (*score) );
     /* 184357871 is wrong  */
 }
 
