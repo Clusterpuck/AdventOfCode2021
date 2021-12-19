@@ -44,10 +44,10 @@ void sizeBasins( int** basinData, int count, int** arrayMap )
     int i;
     for( i = 0; i < count; i++ )
     {
-        printf( "Starting search for %d\n", 
-                arrayMap[basinData[i][0]][basinData[i][1]] ); 
-        checkAround( arrayMap, basinData[i][0], basinData[i][1], 
-                     &( basinData[i][2] ), 
+        printf( "Starting search for %d\n",
+                arrayMap[basinData[i][0]][basinData[i][1]] );
+        checkAround( arrayMap, basinData[i][0], basinData[i][1],
+                     &( basinData[i][2] ),
                      arrayMap[basinData[i][0]][basinData[i][1]] );
     }
 
