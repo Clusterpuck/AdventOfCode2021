@@ -1,0 +1,27 @@
+    temp = strtok( readLine, "," );
+        temp =  strtok( NULL, "," );
+    crabArray[i] = atoi( strtok( readLine, "," ) );
+        crabArray[i] = atoi( strtok( NULL, "," ) );
+    (*drawsPtr) = 1; /*Starts at one to factor first strtok read*/
+    input1 = atoi( strtok( readLine, "," ) );
+        temp = strtok( NULL, "," );
+    drawValues[i] = atoi( strtok( readLine, "," ) );
+        temp = strtok( NULL, "," );
+            bingoCards[i][j][k] = atoi( strtok( readLine, " " ) );
+            /*First element read outside loop to activate strtok*/
+               bingoCards[i][j][k] = atoi( strtok( NULL, " " ) );
+    temp = strtok( readLine, "," );
+        temp = strtok( NULL, "," );
+Binary file ./Day12Paths/path matches
+Binary file ./Day12Paths/.path.c.swp matches
+        nodeData[i][0] = strtok( readLine, "-" );
+        nodeData[i][1] = strtok( NULL , "-" );
+Binary file ./Day12Paths/path.o matches
+    outSeg = strtok( output, " \n" );
+        outSeg = strtok( NULL, " \n" );
+    inSeg = strtok( input, " \n" );
+        inSeg = strtok( NULL, " \n" );
+        input = strtok( readLine, "|" );
+        output = strtok( NULL, "|" );
+        stringSeg = strtok( output, " \n" );
+            stringSeg = strtok( NULL, " \n" );

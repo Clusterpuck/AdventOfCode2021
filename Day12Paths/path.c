@@ -24,6 +24,8 @@
                 or no viable options left i.e. only small caves left that
                 have been visited
                 Count number of times node END reached*/
+
+
 void fileSize( FILE* pathsFilePtr, int* lines )
 {
     char *tempString = (char*)malloc( sizeof(char) * BIG_DATA );
@@ -42,32 +44,30 @@ void fileSize( FILE* pathsFilePtr, int* lines )
 }
 
 
-
 int readFile( FILE* pathsFilePtr )
 {
     int pathNum = 0;
     int lines = -1;
 
     char*** nodeData;
-    char* readLine = (char*)malloc( sizeof( char) * SMALL_DATA );
+    char* readLine;
     int i;
 
     fileSize( pathsFilePtr, &lines );
-    nodeData = (char***)malloc( sizeof( char** ) * lines );
 
+    nodeData = (char***)malloc( sizeof( char** ) * lines );
     for( i=0; i < lines; i++ )
     {
         nodeData[i] = (char**)malloc( sizeof( char* ) * 2 );
-        nodeData[i][0] = (char*)malloc( sizeof( char ) * SMALL_DATA );
-        nodeData[i][1] = (char*)malloc( sizeof( char ) * SMALL_DATA );
-
-        fgets( readLine, SMALL_DATA, pathsFilePtr );
-        nodeData[i][0] = strtok( readLine, "-" );
-        nodeData[i][1] = strtok( NULL , "-" );
-        printf( "%s, %s", nodeData[i][0], nodeData[i][1] );
     }
 
-   printTwoDStringArray( nodeData, lines, 2 );
+    for( i=0; i < lines; i++ )
+    {
+        readLine = (char*)malloc( sizeof( char) * SMALL_DATA );
+        fgets( readLine, SMALL_DATA, pathsFilePtr );
+        nodeData[i][0] = strtok( readLine, "-" );
+        nodeData[i][1] = strtok( NULL , "\n" );
+    }
 
     return pathNum;
 }

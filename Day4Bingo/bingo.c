@@ -74,7 +74,7 @@ void fillDrawValues( FILE* bingoFilePtr, int* drawValues, int draws )
 void fillBingoCards( FILE* bingoFilePtr, int*** bingoCards, int cardNum )
 {
     int i = 0;/*This will represent the card number to fill*/
-    int j = 0; 
+    int j = 0;
     int k = 0;/*j and k are the two dimensions of the bingo card 6*6*/
     char *readLine = (char*)malloc( sizeof( char )* 1000 );
 
