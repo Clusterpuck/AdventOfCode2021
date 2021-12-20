@@ -20,7 +20,11 @@ typedef struct
 
 } node;
 
+node* makeNode( char* nodeName );
 void fileSize( FILE* pathsFilePtr, int *lines );
+node* searchList( char* nodeName, LinkedList *nodeList );
+void createNodeList( char*** nodeData, int lines );
+
 int readFile( FILE* pathsFilePtr );
 
 #endif

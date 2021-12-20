@@ -25,7 +25,7 @@
                 have been visited
                 Count number of times node END reached*/
 
-node* makeNode( char* nodeName, node* firstConnect )
+node* makeNode( char* nodeName )
 {
     node* newNode  = (node*)malloc( sizeof( node ) );
     newNode->connections = createLinkedList();
@@ -39,7 +39,6 @@ node* makeNode( char* nodeName, node* firstConnect )
     {
         newNode->big = FALSE;
     }
-    insertFirst( newNode->connections, firstConnect );
 
     return newNode;
 }
@@ -67,25 +66,66 @@ void fileSize( FILE* pathsFilePtr, int* lines )
 node* searchList( char* nodeName, LinkedList* nodeList )
 {
     LiLiNode* listNode = nodeList->head;
-    node* tempNode = (node*)( listNode->data );
-    char* tempName = tempNode->vertix;
+    node* tempNode;
+    char* tempName;
     int match = FALSE;
-    
+
     while( listNode != NULL && !match )
     {
+        tempNode = (node*)( listNode->data );
+        tempName = tempNode->vertix;
         if( !(strcmp( tempName, nodeName ) ) )
         {/*strcmp returns 0 for match i.e. FALSE*/
-        
+            match = TRUE;
+        }
+        else
+        {
+            listNode = listNode->next;
+        }
+    }
+    if( listNode == NULL )
+        tempNode = NULL;
 
     return tempNode;
+}
 
-void createNodeList( int** nodeData, int lines )
+
+
+void createNodeList( char*** nodeData, int lines )
 {
+    node *nodeOne, *nodeTwo;
     LinkedList *nodeList = createLinkedList();
     int i;
     for( i=0; i < lines; i++ )
     {
-        
+        nodeOne = searchList( nodeData[i][0], nodeList );
+        nodeTwo = searchList( nodeData[i][1], nodeList );
+        if( nodeOne == NULL )
+        {
+            nodeOne = makeNode( nodeData[i][0] );
+        }
+        if( nodeTwo == NULL )
+        {
+            nodeTwo = makeNode( nodeData[i][1] );
+        }
+
+        if( ( !strcmp( nodeOne->vertix, "start" ) ) ||
+            ( !strcmp( nodeTwo->vertix, "end" ) ) )
+        {
+            insertFirst( nodeOne->connections, nodeTwo );
+        }
+        else if( ( !strcmp( nodeTwo->vertix, "start" ) ) ||
+               ( !strcmp( nodeOne->vertix, "end" ) ) )
+        {
+            insertFirst( nodeTwo->connections, nodeOne );
+        }
+        else
+        {
+            insertFirst( nodeOne->connections, nodeTwo );
+            insertFirst( nodeTwo->connections, nodeOne );
+        }
+    }
+}
 
 
 
@@ -111,7 +151,8 @@ int readFile( FILE* pathsFilePtr )
         nodeData[i][1] = strtok( NULL , "\n" );
     }
 
-    printTwoDStringArray( nodeData, lines, 2 );
+    createNodeList( nodeData, lines );
+
 
     return pathNum;
 }
