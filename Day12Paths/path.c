@@ -25,6 +25,27 @@
                 have been visited
                 Count number of times node END reached*/
 
+node* makeNode( char* nodeName, node* firstConnect )
+{
+    node* newNode  = (node*)malloc( sizeof( node ) );
+    newNode->connections = createLinkedList();
+    newNode->vertix = nodeName;
+    newNode->visited = FALSE;
+    if( nodeName[0] > 64 && nodeName[0] < 91 )
+    {
+        newNode->big = TRUE;
+    }
+    else
+    {
+        newNode->big = FALSE;
+    }
+    insertFirst( newNode->connections, firstConnect );
+
+    return newNode;
+}
+
+
+
 
 void fileSize( FILE* pathsFilePtr, int* lines )
 {
@@ -43,6 +64,30 @@ void fileSize( FILE* pathsFilePtr, int* lines )
     free( tempString );
 }
 
+node* searchList( char* nodeName, LinkedList* nodeList )
+{
+    LiLiNode* listNode = nodeList->head;
+    node* tempNode = (node*)( listNode->data );
+    char* tempName = tempNode->vertix;
+    int match = FALSE;
+    
+    while( listNode != NULL && !match )
+    {
+        if( !(strcmp( tempName, nodeName ) ) )
+        {/*strcmp returns 0 for match i.e. FALSE*/
+        
+
+    return tempNode;
+
+void createNodeList( int** nodeData, int lines )
+{
+    LinkedList *nodeList = createLinkedList();
+    int i;
+    for( i=0; i < lines; i++ )
+    {
+        
+
+
 
 int readFile( FILE* pathsFilePtr )
 {
@@ -56,18 +101,17 @@ int readFile( FILE* pathsFilePtr )
     fileSize( pathsFilePtr, &lines );
 
     nodeData = (char***)malloc( sizeof( char** ) * lines );
-    for( i=0; i < lines; i++ )
-    {
-        nodeData[i] = (char**)malloc( sizeof( char* ) * 2 );
-    }
 
     for( i=0; i < lines; i++ )
     {
-        readLine = (char*)malloc( sizeof( char) * SMALL_DATA );
+        nodeData[i] = (char**)malloc( sizeof( char* ) * 2 );
+        readLine = (char*)malloc( sizeof( char ) * SMALL_DATA );
         fgets( readLine, SMALL_DATA, pathsFilePtr );
         nodeData[i][0] = strtok( readLine, "-" );
         nodeData[i][1] = strtok( NULL , "\n" );
     }
+
+    printTwoDStringArray( nodeData, lines, 2 );
 
     return pathNum;
 }
