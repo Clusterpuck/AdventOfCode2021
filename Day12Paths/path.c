@@ -20,7 +20,7 @@
 
   Path finding: At each node try every direction
                 recursion?
-                Unit all paths come to the END
+                Until all paths come to the END
                 or no viable options left i.e. only small caves left that
                 have been visited
                 Count number of times node END reached*/
@@ -91,7 +91,7 @@ node* searchList( char* nodeName, LinkedList* nodeList )
 
 
 
-void createNodeList( char*** nodeData, int lines )
+LinkedList* createNodeList( char*** nodeData, int lines )
 {
     node *nodeOne, *nodeTwo;
     LinkedList *nodeList = createLinkedList();
@@ -111,7 +111,7 @@ void createNodeList( char*** nodeData, int lines )
 
         if( ( !strcmp( nodeOne->vertix, "start" ) ) ||
             ( !strcmp( nodeTwo->vertix, "end" ) ) )
-        {
+        {/*Need slight change so head is at start*/
             insertFirst( nodeOne->connections, nodeTwo );
         }
         else if( ( !strcmp( nodeTwo->vertix, "start" ) ) ||
@@ -128,6 +128,12 @@ void createNodeList( char*** nodeData, int lines )
 }
 
 
+void traverseNodes( node *currentNode )
+{
+    if( 
+    
+    
+
 
 int readFile( FILE* pathsFilePtr )
 {
@@ -137,6 +143,7 @@ int readFile( FILE* pathsFilePtr )
     char*** nodeData;
     char* readLine;
     int i;
+    LinkedList* nodeList;
 
     fileSize( pathsFilePtr, &lines );
 
@@ -151,9 +158,10 @@ int readFile( FILE* pathsFilePtr )
         nodeData[i][1] = strtok( NULL , "\n" );
     }
 
-    createNodeList( nodeData, lines );
+    nodeList = createNodeList( nodeData, lines );
 
-
+    traverseNodes( nodeList );
+    
     return pathNum;
 }
 
