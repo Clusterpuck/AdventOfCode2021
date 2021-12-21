@@ -23,7 +23,8 @@ typedef struct
 node* makeNode( char* nodeName );
 void fileSize( FILE* pathsFilePtr, int *lines );
 node* searchList( char* nodeName, LinkedList *nodeList );
-void createNodeList( char*** nodeData, int lines );
+LinkedList* createNodeList( char*** nodeData, int lines );
+void traverseList( LiLiNode *currentNode, int *endCount );
 
 int readFile( FILE* pathsFilePtr );
 

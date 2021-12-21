@@ -109,36 +109,63 @@ LinkedList* createNodeList( char*** nodeData, int lines )
             nodeTwo = makeNode( nodeData[i][1] );
         }
 
-        if( ( !strcmp( nodeOne->vertix, "start" ) ) ||
-            ( !strcmp( nodeTwo->vertix, "end" ) ) )
-        {/*Need slight change so head is at start*/
+        if( ( !strcmp( nodeOne->vertix, "start" ) ) )
+        {/*Ensures start is the first node, for easy access*/
+            printf( "Inserting a start\n");
             insertFirst( nodeOne->connections, nodeTwo );
         }
-        else if( ( !strcmp( nodeTwo->vertix, "start" ) ) ||
-               ( !strcmp( nodeOne->vertix, "end" ) ) )
+        else if( !strcmp( nodeTwo->vertix, "end" ) )
         {
+            insertLast( nodeOne->connections, nodeTwo );
+        }
+        else if( ( !strcmp( nodeTwo->vertix, "start" ) ) )
+        {
+            printf( "Inserting a start\n");
             insertFirst( nodeTwo->connections, nodeOne );
+        }
+        else if( !strcmp( nodeOne->vertix, "end" ) )
+        {
+            insertLast( nodeTwo->connections, nodeOne );
         }
         else
-        {
-            insertFirst( nodeOne->connections, nodeTwo );
-            insertFirst( nodeTwo->connections, nodeOne );
+        {/*If neither is start or end, connections both ways can be made*/
+            insertLast( nodeOne->connections, nodeTwo );
+            insertLast( nodeTwo->connections, nodeOne );
         }
+    }
+    if( nodeList->head == NULL )
+    {
+        printf( "THe head is null\n");
+    }
+    return nodeList;
+}
+
+/*At this point all nodes are connected to other nodes, the connections
+ *stored in a linked list.
+  At each node, activate traverse nodes while the linked list node isn't null
+  If end reached, add to counter then continue to next node*/
+void traverseNodes( LiLiNode *currentNode, int *endCount )
+{
+    node *currentHub = (node*)( currentNode->data );
+    LiLiNode *nextNodeLink = ( currentHub->connections->head );
+    while( nextNodeLink != NULL )
+    {
+        if( !strcmp( currentHub->vertix, "end" ) )
+        {
+            ++(*endCount);
+        }
+        traverseNodes( nextNodeLink, endCount );
+        nextNodeLink = nextNodeLink->next;
     }
 }
 
 
-void traverseNodes( node *currentNode )
-{
-    if( 
-    
-    
-
-
 int readFile( FILE* pathsFilePtr )
 {
-    int pathNum = 0;
     int lines = -1;
+    int endCount = 0;
+    LiLiNode *startNode;
+    node *testNode;
 
     char*** nodeData;
     char* readLine;
@@ -160,9 +187,12 @@ int readFile( FILE* pathsFilePtr )
 
     nodeList = createNodeList( nodeData, lines );
 
-    traverseNodes( nodeList );
-    
-    return pathNum;
+    startNode = nodeList->head;
+    testNode = (node*)( startNode->data );
+    printf( "Start node is called %s\n", testNode->vertix );
+    traverseNodes( startNode, &endCount );
+
+    return endCount;
 }
 
 
