@@ -30,7 +30,7 @@ node* makeNode( char* nodeName )
     node* newNode  = (node*)malloc( sizeof( node ) );
     newNode->connections = createLinkedList();
     newNode->vertix = nodeName;
-    newNode->visited = FALSE;
+    newNode->visited = -1;
     if( nodeName[0] > 64 && nodeName[0] < 91 )
     {
         newNode->big = TRUE;
@@ -42,9 +42,6 @@ node* makeNode( char* nodeName )
 
     return newNode;
 }
-
-
-
 
 void fileSize( FILE* pathsFilePtr, int* lines )
 {
@@ -84,7 +81,9 @@ node* searchList( char* nodeName, LinkedList* nodeList )
         }
     }
     if( listNode == NULL )
+    {
         tempNode = NULL;
+    }
 
     return tempNode;
 }
@@ -94,8 +93,8 @@ node* searchList( char* nodeName, LinkedList* nodeList )
 LinkedList* createNodeList( char*** nodeData, int lines )
 {
     node *nodeOne, *nodeTwo;
-    LinkedList *nodeList = createLinkedList();
     int i;
+    LinkedList *nodeList = createLinkedList();
     for( i=0; i < lines; i++ )
     {
         nodeOne = searchList( nodeData[i][0], nodeList );
@@ -103,40 +102,40 @@ LinkedList* createNodeList( char*** nodeData, int lines )
         if( nodeOne == NULL )
         {
             nodeOne = makeNode( nodeData[i][0] );
+            insertFirst( nodeList, nodeOne );
         }
         if( nodeTwo == NULL )
         {
             nodeTwo = makeNode( nodeData[i][1] );
+            insertFirst( nodeList, nodeTwo );
         }
-
+        /*Adding relevent connections to new nodes*/
         if( ( !strcmp( nodeOne->vertix, "start" ) ) )
-        {/*Ensures start is the first node, for easy access*/
-            printf( "Inserting a start\n");
+        {
+            /*for a start, the connection for the start is not added
+ *            to the other node as you cannot move to a start, just from*/
             insertFirst( nodeOne->connections, nodeTwo );
+        }
+        else if( !strcmp( nodeTwo->vertix, "start" ) )
+        {
+            insertFirst( nodeTwo->connections, nodeOne );
+        }
+        else if( ( !strcmp( nodeOne->vertix, "end" ) ) )
+        {/*For an end connections cannot go from the end so other node
+           isn't added to the end nodes list*/
+            insertFirst( nodeTwo->connections, nodeOne );
         }
         else if( !strcmp( nodeTwo->vertix, "end" ) )
         {
-            insertLast( nodeOne->connections, nodeTwo );
-        }
-        else if( ( !strcmp( nodeTwo->vertix, "start" ) ) )
-        {
-            printf( "Inserting a start\n");
-            insertFirst( nodeTwo->connections, nodeOne );
-        }
-        else if( !strcmp( nodeOne->vertix, "end" ) )
-        {
-            insertLast( nodeTwo->connections, nodeOne );
+            insertFirst( nodeOne->connections, nodeTwo );
         }
         else
         {/*If neither is start or end, connections both ways can be made*/
-            insertLast( nodeOne->connections, nodeTwo );
-            insertLast( nodeTwo->connections, nodeOne );
+            insertFirst( nodeOne->connections, nodeTwo );
+            insertFirst( nodeTwo->connections, nodeOne );
         }
     }
-    if( nodeList->head == NULL )
-    {
-        printf( "THe head is null\n");
-    }
+
     return nodeList;
 }
 
@@ -144,33 +143,75 @@ LinkedList* createNodeList( char*** nodeData, int lines )
  *stored in a linked list.
   At each node, activate traverse nodes while the linked list node isn't null
   If end reached, add to counter then continue to next node*/
-void traverseNodes( LiLiNode *currentNode, int *endCount )
+void resetVisited( LinkedList *nodeList )
 {
-    node *currentHub = (node*)( currentNode->data );
-    LiLiNode *nextNodeLink = ( currentHub->connections->head );
+    LiLiNode *listNode = nodeList->head;
+    node* tempNode;
+    LiLiNode *connectNode;
+    while( listNode != NULL )
+    {
+        tempNode = (node*)( listNode->data );
+        tempNode->visited = FALSE;
+        connectNode = tempNode->connections->head;
+        while( connectNode != NULL )
+        {
+            tempNode = (node*)( connectNode->data );
+            tempNode->visited = FALSE;
+            printf( "Setting %s to not visited\n", tempNode->vertix );
+            connectNode = connectNode->next;
+        }
+        listNode = listNode->next;
+    }
+}
+
+
+void traverseNodes( node *currentNode, int *endCount, int *path, 
+                    LinkedList *nodeList )
+{
+    LiLiNode *nextNodeLink = ( currentNode->connections->head );
+    node* nextNode;
     while( nextNodeLink != NULL )
     {
-        if( !strcmp( currentHub->vertix, "end" ) )
+        printf( "Path number %d\n", (*path) );
+        nextNode = (node*)(nextNodeLink->data);
+        printf( "Connecting from %s to %s with visited number %d\n", 
+                currentNode->vertix, nextNode->vertix, nextNode->visited );
+        if( !strcmp( nextNode->vertix, "end" ) )
         {
             ++(*endCount);
         }
-        traverseNodes( nextNodeLink, endCount );
+        if( ( nextNode->visited ) != (*path) )
+        { /*If the node is small and has been visited on the same path number, 
+            then cannot go further*/
+            if( !( nextNode->big ) && ( strcmp( nextNode->vertix, "end" ) ) )
+            {
+                nextNode->visited = TRUE;
+            }
+            traverseNodes( nextNode, endCount, path, nodeList ); 
+            currentNode->visited = FALSE;
+        }
+
         nextNodeLink = nextNodeLink->next;
+            
     }
+    ++(*path);
+/*    resetVisited( nodeList );*/
 }
+
+
 
 
 int readFile( FILE* pathsFilePtr )
 {
     int lines = -1;
     int endCount = 0;
-    LiLiNode *startNode;
-    node *testNode;
+    int path = 0;
+    node *startNode = NULL;
+    LinkedList *nodeList;
 
     char*** nodeData;
     char* readLine;
     int i;
-    LinkedList* nodeList;
 
     fileSize( pathsFilePtr, &lines );
 
@@ -186,11 +227,8 @@ int readFile( FILE* pathsFilePtr )
     }
 
     nodeList = createNodeList( nodeData, lines );
-
-    startNode = nodeList->head;
-    testNode = (node*)( startNode->data );
-    printf( "Start node is called %s\n", testNode->vertix );
-    traverseNodes( startNode, &endCount );
+    startNode = searchList( "start", nodeList );
+    traverseNodes( startNode, &endCount, &path, nodeList );
 
     return endCount;
 }

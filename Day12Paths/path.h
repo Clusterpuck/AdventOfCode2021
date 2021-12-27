@@ -24,7 +24,9 @@ node* makeNode( char* nodeName );
 void fileSize( FILE* pathsFilePtr, int *lines );
 node* searchList( char* nodeName, LinkedList *nodeList );
 LinkedList* createNodeList( char*** nodeData, int lines );
-void traverseList( LiLiNode *currentNode, int *endCount );
+void resetVisited( LinkedList *nodeList );
+void traverseList( LiLiNode *currentNode, int *endCount, int *path, 
+                    LinkedList *nodeList );
 
 int readFile( FILE* pathsFilePtr );
 
