@@ -1,0 +1,5 @@
+Cycle number 10
+Found new max of 1749
+Min is 161, max is 1749
+Difference is 1588
+Answer is 16
