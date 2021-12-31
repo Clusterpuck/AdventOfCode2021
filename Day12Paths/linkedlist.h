@@ -9,9 +9,9 @@ typedef struct LinkedListNode
 
 typedef struct
 {
-    LiLiNode * head;
+    LiLiNode *head;
     int size;
-    LiLiNode * tail;
+    LiLiNode *tail;
 } LinkedList;
 
 typedef void (*listFunc)( void* data );

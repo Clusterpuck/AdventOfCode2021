@@ -14,7 +14,7 @@
 #include "poly.h"
 #include "utility.h"
 
-void fileSize( FILE *polyFilePtr, int *monomerLength, int *pairs )
+void fileSize( FILE *polyFilePtr, long *monomerLength, int *pairs )
 {
     char *monoString = (char*)malloc( sizeof( char ) * 512 );
     char *endTest = (char*)malloc( sizeof(char) *512 );
@@ -39,24 +39,25 @@ void fillPairs( FILE* polyFilePtr, char **pairs, int pairNum )
     int i;
     char tempA, tempB, tempC;
 
-    fscanf( polyFilePtr, "\n%c%c -> %c\n", 
+    fscanf( polyFilePtr, "\n%c%c -> %c\n",
             &tempA, &tempB, &tempC );
     pairs[( tempA-65 )][( tempB-65 )] = tempC;
 
     for( i=1; i < pairNum; i++ )
     {
-        fscanf( polyFilePtr, "%c%c -> %c\n", 
+        fscanf( polyFilePtr, "%c%c -> %c\n",
                 &tempA, &tempB, &tempC );
         pairs[( tempA-65 )][( tempB-65 )] = tempC;
     }
 }
 
-void makeNewMonomer( char **monomer, char **newMonomer, 
-                     int monoLength, int matches )
+void makeNewMonomer( char **monomer, char **newMonomer,
+                     long monoLength, long matches )
 {
     int i;
     int pos = 0;
     /*First letter always stays*/
+    printf( "New monomer length is %ld\n", monoLength );
     for( i=0; i < monoLength; i++ )
     {
         newMonomer[0][pos] = monomer[0][i];
@@ -69,7 +70,7 @@ void makeNewMonomer( char **monomer, char **newMonomer,
     }
 }
 
-void tallyMonomer( char *monomer, int monoLength )
+void tallyMonomer( char *monomer, long monoLength )
 {
     /*search 65 to 90 inclusive. */
     int i, j;
@@ -82,33 +83,31 @@ void tallyMonomer( char *monomer, int monoLength )
             if( monomer[i] == ( j + 65) )
             {
                 ++(counts[j]);
+                min = counts[j];
             }
         }
     }
     max = counts[0];
-    min = 2000;
     for( i = 1; i < 26; i++ )
     {
         if( counts[i] > max )
         {
-            printf( "Found new max of %ld\n", counts[i] );
             max = counts[i];
         }
         if( ( counts[i] !=0 ) && ( counts[i] < min ) )
         {
             min = counts[i];
         }
-    }        
+    }
     printf( "Min is %ld, max is %ld\nDifference is %ld\n", min, max, max-min );
     free( counts );
 }
-        
 
-void pairCycles( char **monomer, int monoLength, char **pairs, 
+void pairCycles( char **monomer, long monoLength, char **pairs,
                  int pairNum, int cycles )
 {
     int i, row, col;
-    int matches = 0;
+    long matches = 0;
     char **newMonomer;
     for( i=0; i < monoLength-2; i++ )
     { /*Reduced by 2, 1 for looking one ahead, the other for the terminator
@@ -136,7 +135,7 @@ void pairCycles( char **monomer, int monoLength, char **pairs,
     else
     {
         printf( "Cycle number %d\n", cycles );
-        tallyMonomer( monomer[0], monoLength );
+/*        tallyMonomer( monomer[0], monoLength );*/
         free( newMonomer[0] );
         free( newMonomer[1] );
         free( newMonomer );
@@ -144,19 +143,19 @@ void pairCycles( char **monomer, int monoLength, char **pairs,
         free( monomer[1] );
         free( monomer );
     }
-}    
+}
 
 
 int readFile( FILE* polyFilePtr )
 {
-    int monomerLength = 0;
+    long monomerLength = 0;
     int pairNum = 0;
     char **pairs;
     char **monomer;
     int i;
     int cycles = 0;
     fileSize( polyFilePtr, &monomerLength, &pairNum );
-    
+
     monomer = (char**)calloc( 2, sizeof( char* ) );
     monomer[0] = (char*)calloc( monomerLength, sizeof( char ) );
     monomer[1] = (char*)calloc( monomerLength, sizeof( char ) );
@@ -165,7 +164,7 @@ int readFile( FILE* polyFilePtr )
     fgets( monomer[0], monomerLength, polyFilePtr );
 
     pairs = (char**)calloc( 26, sizeof( char* ) );
-    for( i=0; i < pairNum; i++ )
+    for( i=0; i < 26; i++ )
     {
         pairs[i] = (char*)calloc( 26, sizeof( char ) );
     }
@@ -177,7 +176,7 @@ int readFile( FILE* polyFilePtr )
 
     pairCycles( monomer, monomerLength, pairs, pairNum, cycles );
 
-    for( i=0; i<pairNum; i++ )
+    for( i=0; i<26; i++ )
     {
         free( pairs[i] );
     }

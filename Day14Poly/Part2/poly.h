@@ -1,9 +1,9 @@
 #ifndef POLY_H
 #define POLY_H
 
-#define NUM_CYCLES 10
+#define NUM_CYCLES 25
 
-void fileSize( FILE* polyFilePtr, int *monomerLength, int *pairs );
+void fileSize( FILE* polyFilePtr, long *monomerLength, int *pairs );
 int readFile( FILE* polyFIlePtr );
 
 #endif
