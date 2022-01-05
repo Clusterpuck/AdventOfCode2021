@@ -33,62 +33,115 @@ void fileSize( FILE *polyFilePtr, long *monomerLength, int *pairs )
     rewind( polyFilePtr );
 }
 
-void fillPairs( FILE* polyFilePtr, char **pairs, int pairNum )
-{/*Now each insertion letter is saved at the apropiate array location for it's
-   pairs int value*/
+void fillPairs( FILE* polyFilePtr, long ***pairs, int pairNum )
+{
+/*First data point in i j ref is tally of that pair. Next is to indicate
+ *which pairs to add to after subtracting from current.*/
     int i;
     char tempA, tempB, tempC;
-
+    /*Additional pairs therefore are tempA and tempC and tempC and tempB*/
     fscanf( polyFilePtr, "\n%c%c -> %c\n",
             &tempA, &tempB, &tempC );
-    pairs[( tempA-65 )][( tempB-65 )] = tempC;
+
+    pairs[( (long)(tempA-65) )][( (long)(tempB-65) )][1] = (long)(tempC-65 );
 
     for( i=1; i < pairNum; i++ )
     {
         fscanf( polyFilePtr, "%c%c -> %c\n",
                 &tempA, &tempB, &tempC );
-        pairs[( tempA-65 )][( tempB-65 )] = tempC;
+        pairs[( (long)(tempA-65) )][ (long)(tempB-65)][1] = (long)(tempC-65);
     }
 }
 
-void makeNewMonomer( char **monomer, char **newMonomer,
-                     long monoLength, long matches )
+void copyThreeDLong( long ***oldArray, long ***newArray,
+                     int rows, int cols, int blocks )
 {
-    int i;
-    int pos = 0;
-    /*First letter always stays*/
-    printf( "New monomer length is %ld\n", monoLength );
-    for( i=0; i < monoLength; i++ )
+    int i, j, k;
+    for( i=0; i < rows; i++ )
     {
-        newMonomer[0][pos] = monomer[0][i];
-        ++pos;
-        if( monomer[1][i] != 0 )
+        for( j=0; j < rows; j++ )
         {
-            newMonomer[0][pos] = monomer[1][i];
-            ++pos;
+            for( k=0; k < blocks; k++ )
+            {
+                newArray[i][j][k] = oldArray[i][j][k];
+            }
         }
     }
+    printf( "\n***New Array***\n" );
+    printThreeDLongArray( newArray, rows, cols, blocks );
+    printf( "\n***Old Array***\n" );
+    printThreeDLongArray( oldArray, rows, cols, blocks );
+
 }
 
-void tallyMonomer( char *monomer, long monoLength )
+void pairCycles( long*** pairs, int cycles, int firstLetter )
 {
-    /*search 65 to 90 inclusive. */
     int i, j;
-    long *counts = (long*)calloc( 26, sizeof( long ) );
-    long max, min;
-    for( i=0; i < monoLength; i++ )
+    long tally, insert;
+    long ***newPairs;
+    printf("\n**** CYCLE %d****\n", cycles );
+    tallyMonomer( pairs, firstLetter );
+    if( cycles < NUM_CYCLES )
     {
-        for( j=0; j < 26; j++ )
+        callocThreeDLong( &newPairs, ALPHA_NUM, ALPHA_NUM, 2 );
+        copyThreeDLong( pairs, newPairs, ALPHA_NUM, ALPHA_NUM, 2 );
+        for( i=0; i < ALPHA_NUM; i++ )
         {
-            if( monomer[i] == ( j + 65) )
+            for( j=0; j < ALPHA_NUM; j++)
             {
-                ++(counts[j]);
-                min = counts[j];
+                tally = pairs[i][j][0];
+                if( tally != 0 )
+                {
+                    insert = pairs[i][j][1];
+                    newPairs[i][j][0] = 0;
+                    newPairs[insert][j][0] += tally;
+                    newPairs[i][insert][0] += tally;
+                    printf( "Started with %ld pairs of %c%c\t"
+                        "From %ld pairs to %ld pairs of %c%c and \t"
+                        "From %ld pairs to %ld pairs of %c%c\n",
+                        tally, (char)(i+65), (char)(j+65),
+                        pairs[i][insert][0], newPairs[i][insert][0],
+                        (char)(i+65), (char)(insert+65),
+                        pairs[insert][j][0], newPairs[insert][j][0],
+                        (char)(insert+65), (char)(j+65) );
+                }
+            }
+        }
+        freeThreeDLong( pairs, ALPHA_NUM, ALPHA_NUM );
+        ++cycles;
+        pairCycles( newPairs, cycles, firstLetter );
+    }
+    else
+    {
+        tallyMonomer( pairs, firstLetter );
+        freeThreeDLong( pairs, ALPHA_NUM, ALPHA_NUM );
+    }
+}
+
+void tallyMonomer( long ***pairs, int firstLetter )
+{
+    int i, j;
+    long *counts = (long*)calloc( ALPHA_NUM, sizeof( long ) );
+    long max, min;
+    ++counts[( firstLetter-65 )];
+
+    for( i=0; i < ALPHA_NUM; i++ )
+    {
+        for( j=0; j < ALPHA_NUM; j++ )
+        {
+            if( pairs[i][j][0] != 0 )
+            {
+                printf( "Tallying pair %c%c occuring %ld times**\t",
+                        (char)(i+65), (char)(j+65), pairs[i][j][0] );
+                counts[j] += pairs[i][j][0];
+                printf( "%c tally is now %ld\n",
+                        (char)(j+65), counts[j] );
             }
         }
     }
     max = counts[0];
-    for( i = 1; i < 26; i++ )
+    min = 10000;
+    for( i = 1; i < ALPHA_NUM; i++ )
     {
         if( counts[i] > max )
         {
@@ -103,84 +156,68 @@ void tallyMonomer( char *monomer, long monoLength )
     free( counts );
 }
 
-void pairCycles( char **monomer, long monoLength, char **pairs,
-                 int pairNum, int cycles )
+void callocThreeDLong( long ****array, int rows, int cols, int blocks )
 {
-    int i, row, col;
-    long matches = 0;
-    char **newMonomer;
-    for( i=0; i < monoLength-2; i++ )
-    { /*Reduced by 2, 1 for looking one ahead, the other for the terminator
-        character that doesn't need to be considered*/
-        row = (int)( monomer[0][i] ) - 65;
-        col = (int)( monomer[0][i+1] ) - 65;
-        if( pairs[row][col] != 0 )
-        {/*If pairs array value is zero, no pair exists*/
-            ++matches;
-            monomer[1][i] = pairs[row][col];
+    int i, j;
+    long ***newArray;
+    newArray= (long***)calloc( rows, sizeof( long** ) );
+    for( i=0; i < rows; i++ )
+    {
+        newArray[i] = (long**)calloc( cols, sizeof( long* ) );
+        for( j=0; j< cols; j++ )
+        {
+            newArray[i][j] = (long*)calloc( blocks, sizeof( long ) );
         }
     }
-    newMonomer = (char**)calloc( 2, sizeof( char* ) );
-    newMonomer[0] = (char*)calloc( (monoLength + matches ), sizeof( char ) );
-    newMonomer[1] = (char*)calloc( (monoLength + matches ), sizeof( char ) );
-    makeNewMonomer( monomer, newMonomer, monoLength, matches );
-    if( cycles < NUM_CYCLES )
-    {
-        free( monomer[0] );
-        free( monomer[1] );
-        free( monomer );
-        ++cycles;
-        pairCycles( newMonomer, monoLength+matches, pairs, pairNum, cycles );
-    }
-    else
-    {
-        printf( "Cycle number %d\n", cycles );
-/*        tallyMonomer( monomer[0], monoLength );*/
-        free( newMonomer[0] );
-        free( newMonomer[1] );
-        free( newMonomer );
-        free( monomer[0] );
-        free( monomer[1] );
-        free( monomer );
-    }
+    (*array) = newArray;
 }
 
+void freeThreeDLong( long*** array, int rows, int cols)
+{
+    int i, j;
+    for( i=0; i < rows; i++ )
+    {
+        for( j=0; j <cols; j++ )
+        {
+            free( array[i][j] );
+        }
+        free( array[j] );
+    }
+    free( array );
+}
 
 int readFile( FILE* polyFilePtr )
 {
     long monomerLength = 0;
     int pairNum = 0;
-    char **pairs;
-    char **monomer;
+    char *monomer;
     int i;
     int cycles = 0;
+    int firstLetter;
+    long ***pairs; /*needs to be long for large tally*/
+
+    callocThreeDLong( &pairs, ALPHA_NUM, ALPHA_NUM, 2 );
+  /*Creates a 3D long array to hold the count of a pair in it's relevent
+ *    row column reference (adjust by 65) i.e. AA in 0,0 AB in 0,1 etc*/
+    /*This array stores the tally of the pair and the reference to the
+ *    letter inserted between*/
     fileSize( polyFilePtr, &monomerLength, &pairNum );
 
-    monomer = (char**)calloc( 2, sizeof( char* ) );
-    monomer[0] = (char*)calloc( monomerLength, sizeof( char ) );
-    monomer[1] = (char*)calloc( monomerLength, sizeof( char ) );
+    monomer = (char*)calloc( 64, sizeof( char ) );
     /*Monomer is 2D to hold the insertions in the second line*/
 
-    fgets( monomer[0], monomerLength, polyFilePtr );
-
-    pairs = (char**)calloc( 26, sizeof( char* ) );
-    for( i=0; i < 26; i++ )
+    fgets( monomer, monomerLength, polyFilePtr );
+    firstLetter = monomer[0];
+    /*fill starting pairs*/
+    for( i=0; i < (strlen(monomer)-1); i++ )
     {
-        pairs[i] = (char*)calloc( 26, sizeof( char ) );
+        ++( pairs[monomer[i]-65][monomer[i+1]-65][0] );
     }
-    /*Creates a 2D char array to hold the char pairs and then their outcome*/
-
+    free( monomer );
     fillPairs( polyFilePtr, pairs, pairNum );
-
     fclose( polyFilePtr );
 
-    pairCycles( monomer, monomerLength, pairs, pairNum, cycles );
-
-    for( i=0; i<26; i++ )
-    {
-        free( pairs[i] );
-    }
-    free( pairs );
+    pairCycles( pairs, cycles, firstLetter );
 
     return pairNum;
 }

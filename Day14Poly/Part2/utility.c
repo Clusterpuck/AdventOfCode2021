@@ -51,6 +51,42 @@ void printTwoDIntArray( int **array, int rows, int cols )
     printf("}\n");
 }
 
+void printTwoDLongArray( long **array, int rows, int cols )
+{
+    int i,j;
+    printf( "{" );
+    for( i=0; i < rows; i++ )
+    {
+        for( j=0; j <cols; j++ )
+        {
+            printf("%ld, ", array[i][j] );
+        }
+        printf("\n");
+    }
+    printf("}\n");
+}
+
+void printThreeDLongArray( long ***array, int rows, int cols, int blocks )
+{
+    int i,j,k;
+    printf( "{" );
+    for( i=0; i < rows; i++ )
+    {
+        for( j=0; j <cols; j++ )
+        {
+            printf( "{" );
+            for( k=0; k < blocks; k++ )
+            {
+                printf("%ld, ", array[i][j][k] );
+            }
+            printf("}\t");
+        }
+        printf("\n");
+    }
+    printf("}\n");
+}
+
+
 void printTwoDCharArray( char **array, int rows, int cols )
 {
     int i,j;

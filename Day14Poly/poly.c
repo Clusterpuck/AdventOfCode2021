@@ -90,13 +90,11 @@ void tallyMonomer( char *monomer, int monoLength )
         {
             min = counts[i];
         }
-    }        
-    /*1229 is wrong*/    
+    }
     printf( "Min is %ld, max is %ld\nDifference is %ld\n", min, max, max-min );
 }
-        
 
-void pairCycles( char **monomer, int monoLength, char **pairs, 
+void pairCycles( char **monomer, int monoLength, char **pairs,
                  int pairNum, int cycles )
 {
     int i, j;
@@ -107,7 +105,7 @@ void pairCycles( char **monomer, int monoLength, char **pairs,
     {
         for( j=0; j < pairNum; j++ )
         {
-            if( ( monomer[0][i] == pairs[j][0] ) && 
+            if( ( monomer[0][i] == pairs[j][0] ) &&
                 ( monomer[0][i+1] == pairs[j][1] ) )
             {
                 ++matches;
@@ -132,7 +130,7 @@ void pairCycles( char **monomer, int monoLength, char **pairs,
         printf( "Cycle number %d\n", cycles );
         tallyMonomer( monomer[0], monoLength );
     }
-}    
+}
 
 
 int readFile( FILE* polyFilePtr )
@@ -144,7 +142,7 @@ int readFile( FILE* polyFilePtr )
     int i;
     int cycles = 0;
     fileSize( polyFilePtr, &monomerLength, &pairNum );
-    
+
     monomer = (char**)calloc( 2, sizeof( char* ) );
     monomer[0] = (char*)calloc( monomerLength, sizeof( char ) );
     monomer[1] = (char*)calloc( monomerLength, sizeof( char ) );
