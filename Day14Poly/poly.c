@@ -34,16 +34,16 @@ void fileSize( FILE *polyFilePtr, int *monomerLength, int *pairs )
 void fillPairs( FILE* polyFilePtr, char **pairs, int pairNum )
 {
     int i;
-        fscanf( polyFilePtr, "\n%c%c -> %c\n", 
+        fscanf( polyFilePtr, "\n%c%c -> %c\n",
                 &(pairs[0][0]), &(pairs[0][1]), &(pairs[0][2]) );
     for( i=1; i < pairNum; i++ )
     {
-        fscanf( polyFilePtr, "%c%c -> %c\n", 
+        fscanf( polyFilePtr, "%c%c -> %c\n",
                 &(pairs[i][0]), &(pairs[i][1]), &(pairs[i][2]) );
     }
 }
 
-void makeNewMonomer( char **monomer, char **newMonomer, 
+void makeNewMonomer( char **monomer, char **newMonomer,
                      int monoLength, int matches )
 {
     int i;
