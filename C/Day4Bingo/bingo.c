@@ -181,10 +181,8 @@ int calculateWin( int **winCard, int winNum )
         }
     }
     sum *= winNum;
-    
     return sum;
 }
-    
 
 void extractData( FILE* bingoFilePtr, int draws, int cardNum )
 {
