@@ -79,13 +79,27 @@ public class ProcessFile
             System.out.println( "Found an error on the second pass" );
         }
 
-        System.out.print( "{ " );
-        for( int i = 0; i < pLineNum; i++ )
-        {
-            System.out.print( depthArray[i] + ", " );
-        }
-        System.out.println( " }" );
+        increaseNum( depthArray, pLineNum );
     }
 
+    public static void increaseNum( int[] depthArray, int lineNum )
+    {
+        int count = 0;
+        int[] threeSums = new int[lineNum-2];
+        for( int i = 0; i < lineNum-2; i++ )
+        {
+            threeSums[i] = depthArray[i] + depthArray[i+1] + depthArray[i+2];
+        }
+        for( int i = 1; i < lineNum-2; i++ )
+        {
+            if( threeSums[i-1] < threeSums[i] )
+            {
+                ++count;
+            }
+        }
+        System.out.println( "The count of three sums increase is " + count );
+
+
+    }
 
 }
